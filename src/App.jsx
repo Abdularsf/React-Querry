@@ -1,4 +1,7 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import { MainLayout } from "./components/Layout/MainLayout";
+import { FetchOld } from "./pages/FetchOld";
+import { FetchRQ } from "./pages/FetchRQ";
 
 const router = createBrowserRouter([
   {
@@ -22,7 +25,7 @@ const router = createBrowserRouter([
 ])
 
 const App = () => {
-  return <h1>Hello TanStackQuerry</h1>
+  return <RouterProvider router={router}></RouterProvider>
 }
 
 export default App;
