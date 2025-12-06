@@ -2,24 +2,14 @@ import { useQuery } from "@tanstack/react-query";
 import { fetchPosts } from "../API/api";
 
 export const FetchRQ = () => {
-      const getPostData = async () => {
-        try {
-          const res = await fetchPosts();
-          return res.status === 200 ? res.data : [];
-        } catch (error) {
-          console.log(error);
-          return [];
-        }
-      }
-    
-    //   useEffect(() => {
-    //     getPostData();
-    //   }, [])
 
-    const {data} = useQuery({
+    const {data,isPending,isError,error} = useQuery({
         queryKey:["posts"],
-        queryFn: getPostData,
+        queryFn: fetchPosts,
     })
+
+    if(isPending) return <p>Loading....</p>
+    if(isError) return <p>Error : {error.message || "Something went wrong"}</p>
     
       return (
         <div>
