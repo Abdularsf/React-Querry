@@ -16,6 +16,9 @@ export const Header = () => {
                         <li>
                             <NavLink to="/rq">FetchRQ</NavLink>
                         </li>
+                        <li>
+                            <NavLink to="/infinite">Infinitescroll</NavLink>
+                        </li>
                     </ul>
                 </div>
             </header>
