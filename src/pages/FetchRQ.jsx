@@ -1,12 +1,28 @@
-import { useQuery } from "@tanstack/react-query";
-import { fetchPosts } from "../API/api";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { deletePost, fetchPosts } from "../API/api";
 import { NavLink } from "react-router-dom";
+import { useState } from "react";
 
 export const FetchRQ = () => {
 
+    const [pageNumber,setPageNumber] = useState(0);
+    const queryClient = useQueryClient();
+
+    const deleteMutation = useMutation({
+        mutationFn : (id) => deletePost(id),
+        onSuccess : (data,id) => {
+            queryClient.setQueriesData(["posts",pageNumber],(curElem) => {
+                return curElem?.filter((post) =>{
+                    return post.id != id;
+                })
+            });
+        },
+    })
+
     const { data, isPending, isError, error } = useQuery({
-        queryKey: ["posts"],
-        queryFn: fetchPosts,
+        queryKey: ["posts",pageNumber],
+        queryFn: () => fetchPosts(pageNumber),
+        placeholderData: keepPreviousData,
     })
 
     if (isPending) return <p>Loading....</p>
@@ -26,11 +42,17 @@ export const FetchRQ = () => {
                                     <p>{title}</p>
                                     <p>{body}</p>
                                 </NavLink>
+                                <button onClick={() => deleteMutation.mutate(id)}>Delete</button>
                             </li>
                         )
                     })
                 }
             </ul>
+            <div className="pagination-section container">
+                <button onClick={() => setPageNumber((prev) => prev-3)}>Prev</button>
+                <p>{(pageNumber/3) + 1}</p>
+                <button onClick={() => setPageNumber((prev) => prev+3)}>Next</button>
+            </div>
         </div>
     )
 }
