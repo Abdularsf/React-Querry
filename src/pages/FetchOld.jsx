@@ -8,7 +8,7 @@ export const FetchOld = () => {
   const getPostData = async () => {
     try {
       const res = await fetchPosts();
-      res.status === 200 ? setPosts(res.data) : [];
+      return res.status === 200 ? setPosts(res.data) : [];
     } catch (error) {
       console.log(error);
       return [];
