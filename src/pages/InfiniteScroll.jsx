@@ -1,10 +1,11 @@
 import { useInfiniteQuery } from "@tanstack/react-query"
 import { fetchUsers } from "../API/api";
 import { useEffect } from "react";
+import { useInView } from "react-intersection-observer";
 
 export const InfiniteScroll = () => {
 
-    const { data , hasNextPage,fetchNextPage } = useInfiniteQuery({
+    const { data , hasNextPage,fetchNextPage,isFetchingNextPage } = useInfiniteQuery({
         queryKey: ["users"],
         queryFn: fetchUsers,
         getNextPageParam: (lastPage, allPages) => {
@@ -12,17 +13,22 @@ export const InfiniteScroll = () => {
         }
     })
 
-    const handleScroll = () => {
-        const bottom = window.innerHeight + window.scrollY >=document.documentElement.scrollHeight - 1;
-        if (bottom && hasNextPage) {
-            fetchNextPage();
-        }
-    };
+    // const handleScroll = () => {
+    //     const bottom = window.innerHeight + window.scrollY >=document.documentElement.scrollHeight - 1;
+    //     if (bottom && hasNextPage) {
+    //         fetchNextPage();
+    //     }
+    // };
+
+    const {ref,inView} = useInView({
+        threshold:1,
+    })
 
     useEffect(() => {
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [hasNextPage])
+        if (inView&& hasNextPage) {
+            fetchNextPage();
+        }
+    }, [fetchNextPage,inView,hasNextPage])
 
     return (
         <div>
@@ -46,6 +52,8 @@ export const InfiniteScroll = () => {
                     ))}
                 </ul>
             ))}
+
+            <div ref={ref}>{isFetchingNextPage && <div>Loading more...</div>}</div>
 
         </div>
     );
